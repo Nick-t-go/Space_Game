@@ -35,5 +35,6 @@ Instructions on giving it a whirl:
 
  - Write Tests
  - Complete documentation for helper classes (right now they are mostly blank)
+ - Follow this [article](https://medium.com/@binyamin/creating-a-node-express-webpack-app-with-dev-and-prod-builds-a4962ce51334) to setup Express dev/prod build options for WP4 
 
 
