@@ -24,7 +24,8 @@ class SceneLoad extends Phaser.Scene {
     });
     this.progText.setOrigin(0.5, 0.5);
     this.load.on('progress', this.onProgress, this);
-    this.load.image('cokecan', 'assets/cokecan.png');
+    this.load.image('ship', 'assets/player.png');
+    this.load.image('background', 'assets/background.jpg');
     this.load.image('button1', 'assets/ui/buttons/2/1.png');
     this.load.image('button2', 'assets/ui/buttons/2/5.png');
     this.load.audio('cat', ['assets/audio/meow.mp3', 'assets/audio/meow.ogg']);
