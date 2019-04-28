@@ -25,7 +25,12 @@ class SceneLoad extends Phaser.Scene {
     this.progText.setOrigin(0.5, 0.5);
     this.load.on('progress', this.onProgress, this);
     this.load.image('ship', 'assets/player.png');
+    this.load.image('eship', 'assets/eship.png');
     this.load.image('background', 'assets/background.jpg');
+    this.load.spritesheet('rocks', '/assets/rocks.png', { frameWidth: 125, frameHeight: 100 });
+    this.load.spritesheet('exp', '/assets/exp.png', { frameWidth: 64, frameHeight: 64 });
+    this.load.image('bullet', 'assets/bullet.png');
+    this.load.image('ebullet', 'assets/ebullet.png');
     this.load.image('button1', 'assets/ui/buttons/2/1.png');
     this.load.image('button2', 'assets/ui/buttons/2/5.png');
     this.load.audio('cat', ['assets/audio/meow.mp3', 'assets/audio/meow.ogg']);
