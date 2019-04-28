@@ -42,11 +42,7 @@ class SimpleScene extends Phaser.Scene {
     this.add.text(100, 100, 'Hello Phaser!', {
       fill: '#0f0',
     });
-    const gridConfig = {
-      rows: 5,
-      cols: 5,
-      scene: this,
-    };
+
 
     this.emitter = new Phaser.Events.EventEmitter();
     this.G = new Constants();
@@ -56,18 +52,6 @@ class SimpleScene extends Phaser.Scene {
       scene: this,
       model: this.model,
     });
-    //this.mediaManager.setBackgroundMusic('backgroundMusic');
-
-    const alignGrid = new AlignGrid(
-      gridConfig, {
-        height: ScreenConfig.height(),
-        width: ScreenConfig.width(),
-      },
-    );
-    alignGrid.showNumbers();
-    this.sb = new SoundButtons(this, ScreenConfig.width());
-    alignGrid.placeAtIndex(0, this.sb.musicToggle);
-    alignGrid.placeAtIndex(4, this.sb.sfxToggle);
 
     this.centerX = ScreenConfig.width() / 2;
     this.centerY = ScreenConfig.height() / 2;
@@ -75,6 +59,9 @@ class SimpleScene extends Phaser.Scene {
     this.background.setOrigin(0, 0);
     this.ship = this.physics.add.sprite(this.centerX, this.centerY, 'ship');
     this.eShip = this.physics.add.sprite(this.centerX + 220, this.centerY + 220, 'eship');
+    this.eShip.body.collideWorldBounds = true;
+    this.ship.body.collideWorldBounds = true;
+    
     Align.scaleToGameW(this.ship, 0.125, ScreenConfig.width());
     Align.scaleToGameW(this.eShip, 0.25, ScreenConfig.width());
 
@@ -99,6 +86,7 @@ class SimpleScene extends Phaser.Scene {
       collideWorldBounds: true,
     });
     this.bulletGroup = this.physics.add.group();
+    this.eBulletGroup = this.physics.add.group();
     this.rockGroup.children.iterate((child) => {
       const xx = Math.floor(Math.random() * this.background.displayWidth);
       const yy = Math.floor(Math.random() * this.background.displayHeight);
@@ -113,8 +101,6 @@ class SimpleScene extends Phaser.Scene {
       const speed = Math.floor(Math.random() * 200) - 10;
       child.body.setVelocity(vx * speed, vy * speed);
     });
-    this.physics.add.collider(this.rockGroup);
-    this.physics.add.collider(this.bulletGroup, this.rockGroup, this.destroyRock, null, this);
     const frameNames = this.anims.generateFrameNumbers('exp');
     const f2 = frameNames.slice();
     f2.reverse();
@@ -126,7 +112,53 @@ class SimpleScene extends Phaser.Scene {
       frameRate: 48,
       repeat: false,
     });
-    
+    this.makeInfo();
+    this.setColliders();
+  }
+
+  setColliders() {
+    this.physics.add.collider(this.rockGroup);
+    this.physics.add.collider(this.bulletGroup, this.rockGroup, this.destroyRock, null, this);
+    this.physics.add.collider(this.eBulletGroup, this.rockGroup, this.destroyRock, null, this);
+    this.physics.add.collider(this.bulletGroup, this.eShip, this.damageEnemy, null, this);
+    this.physics.add.collider(this.eBulletGroup, this.ship, this.damagePlayer, null, this);
+  }
+
+  makeInfo() {
+    const textOptions = {
+      align: 'center',
+      backgroundColor: '#000000',
+      fontSize: ScreenConfig.width() / 30,
+    };
+    this.text1 = this.add.text(0, 0, 'Shields\n100', textOptions);
+    this.text2 = this.add.text(0, 0, 'EnemyShields\n100', textOptions);
+    this.text1.setOrigin(0.5, 0.5);
+    this.text2.setOrigin(0.5, 0.5);
+    const gridConfig = {
+      rows: 11,
+      cols: 11,
+      scene: this,
+    };
+    const alignGrid = new AlignGrid(
+      gridConfig, {
+        height: ScreenConfig.height(),
+        width: ScreenConfig.width(),
+      },
+    );
+    alignGrid.placeAtIndex(2, this.text1);
+    alignGrid.placeAtIndex(9, this.text2);
+    this.icon1 = this.add.image(0, 0, 'ship');
+    this.icon2 = this.add.image(0, 0, 'eship');
+    this.icon1.angle = 270;
+    this.icon2.angle = 270;
+    Align.scaleToGameW(this.icon1, 0.05, ScreenConfig.width());
+    Align.scaleToGameW(this.icon2, 0.05, ScreenConfig.width());
+    alignGrid.placeAtIndex(1, this.icon1);
+    alignGrid.placeAtIndex(7, this.icon2);
+    this.text1.setScrollFactor(0);
+    this.text2.setScrollFactor(0);
+    this.icon1.setScrollFactor(0);
+    this.icon2.setScrollFactor(0);
   }
 
   destroyRock(bullet, rock) {
@@ -135,7 +167,17 @@ class SimpleScene extends Phaser.Scene {
     explosion.play('boom');
     rock.destroy();
   }
+  damageEnemy(ship, bullet) {
+    const explosion = this.add.sprite(bullet.x, bullet.y, 'exp');
+    explosion.play('boom');
+    bullet.destroy();
+  }
 
+  damagePlayer(ship, bullet) {
+    const explosion = this.add.sprite(this.ship.x, this.ship.y, 'exp');
+    explosion.play('boom');
+    bullet.destroy();
+  }
 
   getTimer() {
     return new Date().getTime()
@@ -193,6 +235,7 @@ class SimpleScene extends Phaser.Scene {
     this.lastEBullet = this.getTimer();
 
     const eBullet = this.physics.add.sprite(this.eShip.x, this.eShip.y, 'ebullet');
+    this.eBulletGroup.add(eBullet);
     eBullet.body.angularVelocity = 10;
     this.physics.moveTo(eBullet, this.ship.x, this.ship.y, 100);
     // bullet.angle = this.ship.angle;
