@@ -37,6 +37,11 @@ class SceneTitle extends Phaser.Scene {
         width: ScreenConfig.width(),
       },
     );
+
+    this.background = this.add.image(0, 0, 'background');
+    this.background.setOrigin(0, 0);
+    
+    const shipImage = this.add.image(0, 0, 'ship');
     //this.alignGrid.showNumbers();
 
     const title = this.add.image(0, 0, 'title');
@@ -52,6 +57,7 @@ class SceneTitle extends Phaser.Scene {
     Align.scaleToGameW(title, 0.8, ScreenConfig.width());
     this.alignGrid.placeAtIndex(38, title);
     this.alignGrid.placeAtIndex(93, btnStart);
+    this.alignGrid.placeAtIndex(71, shipImage);
 
     this.emitter.on('start_game', this.startGame, this);
   }

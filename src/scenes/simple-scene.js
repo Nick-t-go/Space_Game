@@ -43,11 +43,12 @@ class SimpleScene extends Phaser.Scene {
       fill: '#0f0',
     });
 
-
     this.emitter = new Phaser.Events.EventEmitter();
     this.G = new Constants();
     this.model = new Model(this.emitter, this.G);
     this.controller = new Controller(this.emitter, this.G, this.model);
+    this.model.playerWon = true;
+
     this.mediaManager = new MediaManager({
       scene: this,
       model: this.model,
@@ -57,8 +58,8 @@ class SimpleScene extends Phaser.Scene {
     this.centerY = ScreenConfig.height() / 2;
     this.background = this.add.image(0, 0, 'background');
     this.background.setOrigin(0, 0);
-    this.shields = 100;
-    this.eShields = 100;
+    this.shields = 20;
+    this.eShields = 20;
     this.ship = this.physics.add.sprite(this.centerX, this.centerY, 'ship');
     this.eShip = this.physics.add.sprite(this.centerX + 220, this.centerY + 220, 'eship');
     this.eShip.body.collideWorldBounds = true;
@@ -94,6 +95,7 @@ class SimpleScene extends Phaser.Scene {
     this.makeRocks();
     this.makeInfo();
     this.setColliders();
+    this.sb = new SoundButtons(this, ScreenConfig.width());
   }
 
   setColliders() {
@@ -225,11 +227,19 @@ class SimpleScene extends Phaser.Scene {
   downPlayer() {
     this.shields--;
     this.text1.setText(`Shields\n ${this.shields}`);
+    if(this.shields <= 0){
+      this.model.playerWon = false;
+      this.scene.start("SceneOver", {playerWon: this.model.playerWon})
+    }
   }
 
   downEnemy() {
     this.eShields--;
     this.text2.setText(`Shields\n ${this.eShields}`);
+    if(this.eShields <= 0){
+      this.model.playerWon = true;
+      this.scene.start("SceneOver", {playerWon: this.model.playerWon})
+    }
   }
 
   backgroundClicked() {

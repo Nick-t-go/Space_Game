@@ -17,6 +17,10 @@ class SceneOver extends Phaser.Scene {
     super('SceneOver');
   }
 
+  init(data) {
+    this.playerWon = data.playerWon ? 'ship' : 'eship';
+  }
+
   preload() {
     this.load.image('title', 'assets/title.png');
     this.load.image('button1', 'assets/ui/buttons/2/1.png');
@@ -37,7 +41,7 @@ class SceneOver extends Phaser.Scene {
         width: ScreenConfig.width(),
       },
     );
-    //this.alignGrid.showNumbers();
+    // this.alignGrid.showNumbers();
 
     const title = this.add.image(0, 0, 'title');
     const btnStart = new FlatButton({
@@ -50,14 +54,23 @@ class SceneOver extends Phaser.Scene {
     });
 
     Align.scaleToGameW(title, 0.8, ScreenConfig.width());
-    this.alignGrid.placeAtIndex(38, title);
+    this.alignGrid.placeAtIndex(16, title);
     this.alignGrid.placeAtIndex(93, btnStart);
+
+    this.winnerText = this.add.text(0, 0, 'WINNER', {
+      fontSize: ScreenConfig.width() / 10,
+      color: '#3FE213',
+    });
+    this.winnerText.setOrigin(0.5, 0.5);
+    this.winner = this.add.image(0, 0, this.playerWon);
+    this.winner.angle = 270;
+    this.alignGrid.placeAtIndex(71, this.winner);
+    this.alignGrid.placeAtIndex(49, this.winnerText);
 
     this.emitter.on('start_game', this.startGame, this);
   }
 
   startGame() {
-  	console.log('hap')
     this.scene.start('SceneMain');
   }
   // update() {
